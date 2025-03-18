@@ -11,7 +11,7 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 const corsOptions = {
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173','https://easy-communion-hub.web.app'],
     credentials: true,
     optionSuccessStatus: 200,
 };
@@ -35,11 +35,9 @@ let usersCollection, eventsCollection;
 
 async function run() {
   try {
-    await client.connect();
     usersCollection = client.db('CommunionHub').collection('users');
     eventsCollection = client.db('CommunionHub').collection('events');
 
-    await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
     // Save user in DB
