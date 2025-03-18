@@ -100,6 +100,34 @@ app.post('/events', verifyToken, async (req, res) => {
     res.send(result); 
 });
 
+// get all events
+app.get('/events', async (req, res) => {
+    try {
+        const events = await eventsCollection.find().toArray();
+        res.send(events);
+    } catch (error) {
+        res.status(500).send({ message: "Error fetching events", error });
+    }
+});
+
+// get single event
+app.get('/events/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    try {
+        const event = await eventsCollection.findOne(query);
+        if (event) {
+            res.send(event);
+        } else {
+            res.status(404).send({ message: "Event not found" });
+        }
+    } catch (error) {
+        res.status(500).send({ message: "Error fetching event", error });
+    }
+});
+
+
+
 // Generate JWT token
 app.post('/jwt', (req, res) => {
     const { email } = req.body;
