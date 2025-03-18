@@ -31,10 +31,13 @@ const client = new MongoClient(uri, {
   }
 });
 
+let usersCollection, eventsCollection;
+
 async function run() {
   try {
     await client.connect();
-    const usersCollection = client.db('CommunionHub').collection('users');
+    usersCollection = client.db('CommunionHub').collection('users');
+    eventsCollection = client.db('CommunionHub').collection('events');
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -68,7 +71,6 @@ async function run() {
         }
     });
 
-
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
   }
@@ -89,6 +91,14 @@ const verifyToken = (req, res, next) => {
         next();
     });
 };
+
+// Add an event with JWT verification
+app.post('/events', verifyToken, async (req, res) => {
+    const eventData = req.body;
+    eventData.createdAt = new Date(); 
+    const result = await eventsCollection.insertOne(eventData); 
+    res.send(result); 
+});
 
 // Generate JWT token
 app.post('/jwt', (req, res) => {
